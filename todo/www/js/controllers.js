@@ -1,85 +1,19 @@
-angular.module('controllers',[])
+'use strict';
 
-// .service('svc', function() {
-//             var svc = {};
+angular.module('todo.controllers', [
+  'ionic',
+  'todo.services'
+])  
+.controller('ProjectsCtrl', ProjectsCtrl)
+.controller('TaskCtrl', TaskCtrl);
 
-//             svc.method = function() {
-//                 alert(1);
-//             }
-
-//             return svc;
-//         })
-//         .controller('ctrl', [
-//             '$scope', 'svc', function($scope, svc) {
-//                 svc.method();
-//             }
-//         ]);
-
-.controller('ProjectCtrl',function($scope, $timeout, $ionicModal, Projects, $ionicSideMenuDelegate){
-  
-  $scope.projects = Projects.all();
-  $scope.$watch('projects', function(newValue, oldValue) {
-    Projects.save($scope.projects);    
-  }, true);
-  $scope.$watch('activeProject', function (newValue, oldValue) {
-    if (newValue == oldValue) return false;
-    Projects.setActiveProject($scope.activeProject);
-  }, true);
-
-  $timeout(function() {
-    var a = Projects.getLastActiveProject();
-    // console.log("initActive project", a);
-    $scope.activeProject = a || newProject();
-  },0);
-
-  $scope.createProject = function(project){
-    var newProject = Projects.newProject(project.name);
-    $scope.projects.push(newProject);
-    $scope.selectProject(newProject);
-    $scope.closeNewProject();
-    project.name = null;
-  };
-  $scope.isActive = function (project) {
-    return $scope.activeProject === project;
-  };
-  // called to sellect the given project
-  $scope.selectProject  = function(project){
-    $scope.activeProject = project;
-    $ionicSideMenuDelegate.toggleLeft(true);
-  };
-  $scope.deleteSelectedProject = function(selectedProject){
-    if (typeof selectedProject === 'undefined') return;
-    var index = $scope.projects.indexOf(selectedProject);
-    for (var i = 0; i <= $scope.projects[index].tasks.length; i++){
-      $scope.projects[index].tasks.splice(i);
-    };
-    $scope.projects.splice(index, 1);
-  };
-  $scope.toggleProjects = function(){
-    $ionicSideMenuDelegate.toggleLeft();
-  };
-  $ionicModal.fromTemplateUrl('templates/create-new-project-modal.html',{
-    scope: $scope,
-    animation: 'slide-in-up',
-  }).then(function(modal){
-    $scope.projectModal = modal;
-  });
-  $scope.newProject = function(){
-    $scope.projectModal.show();
-  };
-  $scope.closeNewProject = function(){
-    $scope.projectModal.hide();
-  };
-
-})
-
-.controller('TaskCtrl', function($scope){
+TaskCtrl.$inject = ['$scope'];
+function TaskCtrl ($scope){
 // called when the form is submited
   $scope.createTask = function(task){
     if(!$scope.activeProject || !task){
-      return;
+       return;
     }
-    // console.info("push new task to active project object", $scope.activeProject);
     $scope.activeProject.tasks.push({
       title: task.title,
       date: new Date(task.date) || new Date(),
@@ -150,8 +84,63 @@ angular.module('controllers',[])
     task.checked = !task.checked;
   };
 
-})
- 
-// .controller('AutorisationCtrl',function($scope){
+}
 
-// });
+ProjectsCtrl.$inject = ['$scope', '$timeout', '$ionicModal', 'ProjectsService', '$ionicSideMenuDelegate'];
+function ProjectsCtrl ($scope, $timeout, $ionicModal, ProjectsService, $ionicSideMenuDelegate) {
+  
+  $scope.projects = ProjectsService.all();
+  $scope.$watch('projects', function(newValue, oldValue) {
+      ProjectsService.save($scope.projects);
+  }, true);
+
+  $scope.$watch('activeProject', function (newValue, oldValue) {
+     if (newValue == oldValue) return false;
+      ProjectsService.setActiveProject($scope.activeProject);
+  }, true);
+
+  $timeout(function() {
+     var a = ProjectsService.getLastActiveProject();
+     // console.log("initActive project", a);
+     $scope.activeProject = a || newProject();
+  },0);
+
+  $scope.createProject = function(project){
+     var newProject = Projects.newProject(project.name);
+     $scope.projects.push(newProject);
+     $scope.selectProject(newProject);
+     $scope.closeNewProject();
+     project.name = null;
+  };
+  $scope.isActive = function (project) {
+     return $scope.activeProject === project;
+  };
+  // called to sellect the given project
+  $scope.selectProject  = function(project){
+     $scope.activeProject = project;
+     $ionicSideMenuDelegate.toggleLeft(true);
+  };
+  $scope.deleteSelectedProject = function(selectedProject){
+     if (typeof selectedProject === 'undefined') return;
+     var index = $scope.projects.indexOf(selectedProject);
+     for (var i = 0; i <= $scope.projects[index].tasks.length; i++) {
+       $scope.projects[index].tasks.splice(i);
+     }
+     $scope.projects.splice(index, 1);
+  };
+  $scope.toggleProjects = function(){
+     $ionicSideMenuDelegate.toggleLeft();
+  };
+  $ionicModal.fromTemplateUrl('templates/create-new-project-modal.html',{
+     scope: $scope,
+     animation: 'slide-in-up'
+  }).then(function(modal){
+     $scope.projectModal = modal;
+  });
+  $scope.newProject = function(){
+     $scope.projectModal.show();
+  };
+  $scope.closeNewProject = function(){
+     $scope.projectModal.hide();
+  };
+}
