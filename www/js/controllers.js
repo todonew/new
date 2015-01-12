@@ -6,7 +6,7 @@ angular.module('todo.controllers', [
 ])  
 .controller('ProjectsCtrl', ProjectsCtrl)
 .controller(['TaskCtrl', 'TaskService'], TaskCtrl, TaskService)
-.service('TaskService',TaskService)
+.controller('authorizCtrl', authorizCtrl)
 
 TaskCtrl.$inject = ['$scope'];
 function TaskCtrl ($scope){
@@ -126,50 +126,20 @@ function ProjectsCtrl ($scope, $timeout, $ionicModal, ProjectsService, $ionicSid
      $scope.projectModal.hide();
   };
 }
+authorizCtrl.$inject = ['$scope'];
 
-TaskService.$inject = ["$scope"];
-function TaskService($scope)  {
-  $scope.saveTask = function (task) {
-      if ($scope.getTaskID(task) > -1) $scope.editTask(task);
-      else $scope.addNewTask(task);
-    };
-  $scope.addNewTask = function(task){
-    if(!$scope.activeProject || !task){
-       return;
-    }
-    $scope.activeProject.tasks.push({
-      title: task.title,
-      date: new Date(task.date) || new Date(),
-      checked: false,
-      comment: task.comment
-    });
+authorizCtrl = function(){
+  $scope.signIn = function(user){
 
-    $scope.closeNewTask();
-
-    task.title = null;
-    task.date= new Date();
-    task.comment = null;
-    task.checked = false;
   };
-  
-  $scope.editTask = function(task){
-    console.log("active" + $scope.activeProject.activeTask.title);
-    if (typeof activeTask === 'undefined') return;
-    if(!$scope.activeProject.activeTask || !activeTask) return;
-    var indexOf = $scope.activeProject.activeTask;
+  $scope.signUp = function(newUser){
 
-    $scope.activeProject.activeTask.title = task.title || $scope.activeProject.activeTask.title;
-    $scope.activeProject.activeTask.date = task.date || $scope.activeProject.activeTask.date;
-    $scope.activeProject.activeTask.comment = task.comment || $scope.activeProject.activeTask.comment;
-    $scope.activeProject.activeTask.checked = false;
-     
-    $scope.closeEditTask();
-
-    task.title = null;
-    task.date= new Date();
-    task.comment = null;
-    task.checked = false;
-    
-    $scope.activeProject.activeTask = null;
+    var TestObject = Parse.Object.extend("newUser");
+    var newUser = new newUser();
+    newUser.save({name: newUser.name, password: newUser.password})
+              .then(function(object) {
+                alert("yay! it worked");
+              });
   };
+
 }
