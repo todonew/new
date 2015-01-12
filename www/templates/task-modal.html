@@ -1,0 +1,38 @@
+<div class="modal" ng-controller="TaskCtrl">
+  <!-- // ion-header-bar -->
+  <ion-header-bar>
+    <button class="button button-clear button-assertive" ng-click="closeNewTask()">Cancel</button>
+    <h1 ng-if="!edit" class='title'>New task</h1>
+    <h1 ng-if="edit" class="title">Edit Task</h1>
+  </ion-header-bar>
+
+<!--       // modal content -->
+  <ion-content>
+    <form name="TaskForm" ng-submit="TaskForm.$valid() && saveTask(task)" novalidate>
+
+      <div class="list">
+        <label class="item item-input">
+          <input ng-if="!edit" type="text" placeholder="What do you need to do?" ng-model="task.title" required class="ng-pristine ng-invalid"/>
+          <input ng-if="edit" type="text" ng-change="$scope.activeProject.activeTask.title" ng-model="task.title"/>
+        </label>
+        <label class="item item-input">
+          <span class="input-label" placeholder="Date to do">Date:</span>
+          <input ng-if="!edit"type="date" ng-model="task.date" required class="ng-pristine ng-invalid"/>
+          <input ng-if="edit" type="date" ng-change="$scope.activeProject.activeTask.date" ng-model="task.date"/>
+        </label>
+        <label class='item item-input'>
+          <input ng-if="!edit"type="text" placeholder="Leave here a comment to task" ng-model="task.comment" required 
+                 class="ng-pristine ng-invalid"/>
+          <input ng-if="edit" type="text" ng-change="$scope.activeProject.activeTask.comment" ng-model="task.comment"/>
+        </label>
+      </div>
+
+      <div> TaskForm is {{TaskForm.$valid}}</div>
+      
+      <div class="padding">
+        <button  ng-if="!edit" type="submit" class="button button-block button-positive">Create Task</button>
+        <button ng-if="edit" type="submin" class="button button-block button-positive">Save Task</button>
+      </div>
+    </form>
+  </ion-content>
+</div>
