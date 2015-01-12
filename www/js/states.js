@@ -10,11 +10,12 @@ angular.module('todo.StateProvider',[
 		.state('todo', {
 			url:'/todo',
 			abstract: true,
+			template: '<ui-view/>',
 			templateUrl: 'index.html',
 			controller: 'ProjectsCtrl'
 		})
 		.state('todo.projectTasks', {
-			url: '/projectTasks',
+			url: '/projectTasks/{$scope.activeProject.title}',
 			views: {
 			'': {
 				templateUrl: 'template/projectsTasks.html',
@@ -33,7 +34,7 @@ angular.module('todo.StateProvider',[
 			}
 		})
 		.state('todo.createNewTask', {
-			url: '/{$scope.activeProject}/{getTaskID($scope.activeProject.activeTask)}',
+			url: '/{$scope.activeProject.title}/{getTaskID($scope.activeProject.activeTask)}',
 			abstract: true,
 			views: {
 				'': {
